@@ -5,7 +5,6 @@ import { getDocument, updateDocument } from '../../firebase/firestore';
 export default function VendorDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [vendor, setVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
 
@@ -14,7 +13,6 @@ export default function VendorDetails() {
       const docSnap = await getDocument('vendors', id);
       if (docSnap.exists()) {
         const data = { id: docSnap.id, ...docSnap.data() };
-        setVendor(data);
         setFormData(data);
       }
       setLoading(false);
