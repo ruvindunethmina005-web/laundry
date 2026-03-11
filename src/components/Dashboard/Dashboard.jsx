@@ -7,9 +7,9 @@ import {
   CurrencyDollarIcon,
   ShoppingCartIcon,
   ChartBarIcon,
-  PlusCircleIcon,
+  PlusIcon,
   UsersIcon,
-  ClockIcon,
+  ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Dashboard() {
@@ -18,8 +18,8 @@ export default function Dashboard() {
 
   if (tLoading || aLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -29,71 +29,63 @@ export default function Dashboard() {
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const pl = calculateProfitLoss(transactions, accounts, startOfMonth, endOfMonth);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
   const metrics = [
     {
-      title: 'Total Income',
+      label: 'Total Income',
       value: pl.totalIncome,
-      icon: CurrencyDollarIcon,
+      icon: ArrowTrendingUpIcon,
       color: 'green',
-      bgColor: 'bg-green-100',
-      textColor: 'text-green-600',
+      bg: 'bg-green-50',
+      text: 'text-green-700',
     },
     {
-      title: 'Total Expenses',
+      label: 'Total Expenses',
       value: pl.totalExpense,
       icon: ShoppingCartIcon,
       color: 'red',
-      bgColor: 'bg-red-100',
-      textColor: 'text-red-600',
+      bg: 'bg-red-50',
+      text: 'text-red-700',
     },
     {
-      title: 'Net Profit',
+      label: 'Net Profit',
       value: pl.netProfit,
       icon: ChartBarIcon,
       color: pl.netProfit >= 0 ? 'green' : 'red',
-      bgColor: pl.netProfit >= 0 ? 'bg-green-100' : 'bg-red-100',
-      textColor: pl.netProfit >= 0 ? 'text-green-600' : 'text-red-600',
+      bg: pl.netProfit >= 0 ? 'bg-green-50' : 'bg-red-50',
+      text: pl.netProfit >= 0 ? 'text-green-700' : 'text-red-700',
     },
   ];
 
-  const quickActions = [
-    { label: 'New Sale', path: '/sales/new', icon: PlusCircleIcon, color: 'blue' },
-    { label: 'New Expense', path: '/expenses/new', icon: ShoppingCartIcon, color: 'red' },
-    { label: 'New Vendor', path: '/vendors/new', icon: UsersIcon, color: 'green' },
+  const actions = [
+    { label: 'New Sale', to: '/sales/new', icon: PlusIcon, color: 'blue' },
+    { label: 'New Expense', to: '/expenses/new', icon: ShoppingCartIcon, color: 'red' },
+    { label: 'New Vendor', to: '/vendors/new', icon: UsersIcon, color: 'green' },
   ];
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome back! Here's what's happening with your laundry business.</p>
+        <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
+        <p className="text-gray-600 mt-1">Welcome back! Here's your monthly overview.</p>
       </div>
 
-      {/* Metrics Cards */}
+      {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {metrics.map((metric, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
-          >
+        {metrics.map((metric, idx) => (
+          <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{metric.title}</p>
-                <p className={`text-3xl font-bold mt-2 ${metric.textColor}`}>
+                <p className="text-sm text-gray-600">{metric.label}</p>
+                <p className={`text-2xl font-bold mt-1 ${metric.text}`}>
                   {formatCurrency(metric.value)}
                 </p>
               </div>
-              <div className={`${metric.bgColor} p-4 rounded-xl`}>
-                <metric.icon className={`h-8 w-8 ${metric.textColor}`} />
+              <div className={`${metric.bg} p-3 rounded-lg`}>
+                <metric.icon className={`h-6 w-6 ${metric.text}`} />
               </div>
             </div>
           </div>
@@ -101,48 +93,40 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions & Recent Transactions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <ClockIcon className="h-5 w-5 mr-2 text-gray-600" />
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, idx) => (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {actions.map((action, idx) => (
               <Link
                 key={idx}
-                to={action.path}
-                className={`flex flex-col items-center justify-center p-6 bg-${action.color}-50 rounded-xl hover:bg-${action.color}-100 transition-colors group`}
+                to={action.to}
+                className={`flex flex-col items-center justify-center p-4 bg-${action.color}-50 rounded-lg hover:bg-${action.color}-100 transition-colors group`}
               >
-                <action.icon className={`h-8 w-8 text-${action.color}-600 mb-2 group-hover:scale-110 transition-transform`} />
-                <span className={`text-sm font-medium text-${action.color}-700`}>{action.label}</span>
+                <action.icon className={`h-6 w-6 text-${action.color}-600 mb-1 group-hover:scale-110 transition`} />
+                <span className={`text-xs font-medium text-${action.color}-700`}>{action.label}</span>
               </Link>
             ))}
           </div>
         </div>
 
         {/* Recent Transactions */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-              <ClockIcon className="h-5 w-5 mr-2 text-gray-600" />
-              Recent Transactions
-            </h2>
-            <Link to="/transactions" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+            <Link to="/transactions" className="text-sm text-blue-600 hover:text-blue-700">
               View all
             </Link>
           </div>
           {transactions.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No transactions yet. Click "New Sale" or "New Expense" to get started.
-            </div>
+            <p className="text-gray-500 text-center py-6">No transactions yet.</p>
           ) : (
             <ul className="divide-y divide-gray-200">
               {transactions.slice(0, 5).map((t) => (
                 <li key={t.id} className="py-3 flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className={`w-2 h-2 rounded-full mr-3 ${t.type === 'sale' ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span className={`w-2 h-2 rounded-full ${t.type === 'sale' ? 'bg-green-500' : 'bg-red-500'} mr-3`} />
                     <div>
                       <p className="text-sm font-medium text-gray-900">{t.description}</p>
                       <p className="text-xs text-gray-500">
